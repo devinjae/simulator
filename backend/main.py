@@ -3,12 +3,16 @@ Trading Simulator FastAPI Application
 Main entry point for the trading simulator backend
 """
 
+import asyncio
+
+from fastapi import FastAPI, WebSockets
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
 from app.models import models
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from app.websocket.price_engine import price_engine
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -42,6 +46,28 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/version")
+async def version_check():
+    return {"version": "1.0.0"}
+
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(price_engine.run())
+
+
+@app.websocket("/ws/market")
+async def websocket_market(websocket):
+    await price_engine.connect(websocket)
+    try:
+        while True:
+            await asyncio.sleep(60)
+    except Exception as e:
+        pass
+    finally:
+        price_engine.disconnect(websocket)
 
 
 if __name__ == "__main__":
