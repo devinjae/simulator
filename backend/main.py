@@ -5,7 +5,7 @@ Main entry point for the trading simulator backend
 
 import asyncio
 
-from fastapi import FastAPI, Web
+from fastapi import FastAPI, WebSockets
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
