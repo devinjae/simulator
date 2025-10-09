@@ -43,6 +43,10 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+@app.get("/version")
+async def version_check():
+    return {"version": "1.0.0"}
+
 
 if __name__ == "__main__":
     import uvicorn
