@@ -5,18 +5,17 @@ Main entry point for the trading simulator backend
 
 import asyncio
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
-from app.models import models
-from app.websocket import websocket_router
+# from app.models import models
 from app.websocket.price_engine import price_engine
 
 # Create database tables
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Trading Simulator API",
@@ -37,7 +36,6 @@ app.add_middleware(
 
 # Include API and WebSocket routers
 app.include_router(api_router, prefix="/api/v1")
-app.include_router(websocket_router)
 
 
 @app.get("/")
@@ -58,6 +56,17 @@ async def version_check():
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(price_engine.run())
+    
+@app.websocket("/ws/market")
+async def websocket_market(websocket: WebSocket):
+    await price_engine.connect(websocket)
+    try:
+        while True:
+            await asyncio.sleep(60)
+    except Exception as e:
+        pass
+    finally:
+        price_engine.disconnect(websocket)
 
 
 if __name__ == "__main__":
