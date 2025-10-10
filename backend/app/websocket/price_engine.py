@@ -3,6 +3,8 @@ from fastapi import WebSocket
 
 class PriceEngine:
     def __init__(self):
+        # TODO: convert to map, should be ticker -> connections
+        # also add another map ticker -> gbm simulator
         self.active_connections = set()
         self.is_running = False
 
