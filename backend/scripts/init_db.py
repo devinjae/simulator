@@ -10,7 +10,19 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sqlmodel import SQLModel
 
 from app.db.database import engine
-from app.models.user import User  # Import models to register them
+
+# Import all models to register them with SQLModel metadata
+from app.models import (
+    Bot,
+    BotPosition,
+    Instrument,
+    InstrumentFactorExposure,
+    InstrumentSectorExposure,
+    MacroFactor,
+    NewsEvent,
+    NewsEventFactor,
+    Sector,
+)
 
 
 def init_database():
