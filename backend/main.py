@@ -5,7 +5,7 @@ Main entry point for the trading simulator backend
 
 import asyncio
 
-from fastapi import FastAPI, WebSockets
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
@@ -59,7 +59,7 @@ async def startup_event():
 
 
 @app.websocket("/ws/market")
-async def websocket_market(websocket):
+async def websocket_market(websocket: WebSocket):
     await price_engine.connect(websocket)
     try:
         while True:
