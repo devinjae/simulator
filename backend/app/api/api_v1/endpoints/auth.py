@@ -2,12 +2,13 @@
 Authentication endpoints
 """
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlmodel import Session
+
 from app.core.config import settings
 from app.db.database import get_db
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 
