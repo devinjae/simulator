@@ -2,16 +2,45 @@
 Security utilities for authentication and password hashing
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Union
 
-from jose import jwt
-from passlib.context import CryptContext
+import bcrypt
+import jwt
+from fastapi import HTTPException, status
+from jwt.exceptions import InvalidTokenError
 
 from app.core.config import settings
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Simple bcrypt functions to avoid passlib issues
+def get_password_hash(password: str) -> str:
+    """Hash a password using bcrypt directly"""
+    # Convert password to bytes
+    password_bytes = password.encode("utf-8")
+    # Generate salt and hash
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against its hash using bcrypt directly"""
+    try:
+        # Convert to bytes
+        password_bytes = plain_password.encode("utf-8")
+        hashed_bytes = hashed_password.encode("utf-8")
+        # Verify password
+        return bcrypt.checkpw(password_bytes, hashed_bytes)
+    except Exception:
+        return False
+
+
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 
 
 def create_access_token(
@@ -19,9 +48,9 @@ def create_access_token(
 ) -> str:
     """Create a JWT access token"""
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
+        expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
     to_encode = {"exp": expire, "sub": str(subject)}
@@ -29,16 +58,6 @@ def create_access_token(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded_jwt
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash"""
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
 
 
 def verify_token(token: str) -> Union[str, None]:
@@ -51,5 +70,5 @@ def verify_token(token: str) -> Union[str, None]:
         if username is None:
             return None
         return username
-    except jwt.JWTError:
+    except InvalidTokenError:
         return None

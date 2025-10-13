@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
 from app.core.config import settings
-from app.core.deps import get_current_active_user
+from app.core.deps import get_current_active_superuser, get_current_active_user
 from app.core.security import create_access_token
 from app.db.database import get_db
 from app.schemas.token import Token
@@ -51,9 +51,13 @@ def login_for_access_token(
 
 
 @router.post("/register", response_model=UserPublic)
-def register_user(user_create: UserCreate, db: Session = Depends(get_db)) -> UserPublic:
+def register_user(
+    user_create: UserCreate,
+    db: Session = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_superuser),
+) -> UserPublic:
     """
-    Register a new user
+    Register a new user (admin only)
     """
     try:
         user = AuthService.create_user(db, user_create)
