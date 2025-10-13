@@ -1,0 +1,40 @@
+# Database Migrations
+
+This directory contains Alembic migrations for the trading simulator database.
+
+## Common Commands
+
+### Create a new migration (after changing models)
+```bash
+alembic revision --autogenerate -m "Description of changes"
+```
+This command detects changes in your SQLModel models (located in `app/models/`) and generates a migration file.
+
+### Apply migrations to database
+```bash
+alembic upgrade head
+```
+This applies all pending migrations to bring your database up to date.
+
+### Check current migration status
+```bash
+alembic current
+```
+
+### Rollback one migration
+```bash
+alembic downgrade -1
+```
+
+## Workflow
+
+1. Make changes to your models in `app/models/`
+2. Generate migration: `alembic revision --autogenerate -m "your message"`
+3. Review the generated migration file in `migrations/versions/`
+4. Apply migration: `alembic upgrade head`
+
+## Notes
+
+- Always review auto-generated migrations before applying them
+- Database connection configured in `app/core/config.py` (via DATABASE_URL)
+- All models use UUID7 for primary keys
