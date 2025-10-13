@@ -8,14 +8,27 @@ import asyncio
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
+# Create database tables
+from sqlmodel import SQLModel
+
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
-from app.models import models
+from app.models import (
+    Bot,
+    BotPosition,
+    Instrument,
+    InstrumentFactorExposure,
+    InstrumentSectorExposure,
+    MacroFactor,
+    NewsEvent,
+    NewsEventFactor,
+    Sector,
+    User,
+)
 from app.websocket.price_engine import price_engine
 
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
+SQLModel.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Trading Simulator API",
