@@ -18,7 +18,7 @@ load_dotenv(backend_dir / ".env")
 
 from sqlmodel import Session
 
-from app.db.crud.user import user as crud_user
+from app.db.crud.user import user as user_crud
 from app.db.database import engine
 from app.schemas.user import UserCreate
 
@@ -28,13 +28,13 @@ def create_user(username: str, email: str, password: str, is_superuser: bool = F
 
     with Session(engine) as db:
         # Check if user already exists
-        existing_user = crud_user.get_by_username(db, username=username)
+        existing_user = user_crud.get_by_username(db, username=username)
         if existing_user:
             print(f"❌ User '{username}' already exists!")
             return False
 
         # Check if email is already taken
-        if email and crud_user.get_by_email(db, email=email):
+        if email and user_crud.get_by_email(db, email=email):
             print(f"❌ Email '{email}' is already registered!")
             return False
 
@@ -48,7 +48,7 @@ def create_user(username: str, email: str, password: str, is_superuser: bool = F
                 is_superuser=is_superuser,
             )
 
-            user = crud_user.create(db, obj_in=user_create)
+            user = user_crud.create(db, obj_in=user_create)
 
             user_type = "Admin" if is_superuser else "Regular"
             print(f"✅ {user_type} user created successfully!")

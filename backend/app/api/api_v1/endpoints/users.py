@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
 from app.core.deps import get_current_active_superuser, get_current_active_user
-from app.db.crud.user import user as crud_user
+from app.db.crud.user import user as user_crud
 from app.db.database import get_db
 from app.schemas.user import UserInDB, UserPublic
 
@@ -25,7 +25,7 @@ def read_users(
     """
     Retrieve users (superuser only)
     """
-    users = crud_user.get_multi(db, skip=skip, limit=limit)
+    users = user_crud.get_multi(db, skip=skip, limit=limit)
     return [UserPublic.model_validate(user) for user in users]
 
 
@@ -38,7 +38,7 @@ def read_user(
     """
     Get a specific user by ID
     """
-    user = crud_user.get(db, user_id)
+    user = user_crud.get(db, user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"

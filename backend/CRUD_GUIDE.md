@@ -130,20 +130,20 @@ def create_item(
 
 ## Available CRUD Operations
 
-### User CRUD (`crud_user`)
+### User CRUD (`user_crud`)
 
 ```python
 # Basic operations
-crud_user.get(db, user_id)                    # Get by ID
-crud_user.get_multi(db, skip=0, limit=100)    # Get multiple with pagination
-crud_user.create(db, obj_in=user_create)      # Create new user
-crud_user.update(db, db_obj=user, obj_in=update)  # Update user
-crud_user.remove(db, id=user_id)              # Delete user
+user_crud.get(db, user_id)                    # Get by ID
+user_crud.get_multi(db, skip=0, limit=100)    # Get multiple with pagination
+user_crud.create(db, obj_in=user_create)      # Create new user
+user_crud.update(db, db_obj=user, obj_in=update)  # Update user
+user_crud.remove(db, id=user_id)              # Delete user
 
 # User-specific operations
-crud_user.get_by_username(db, username="john")    # Get by username
-crud_user.get_by_email(db, email="john@example.com")  # Get by email
-crud_user.authenticate(db, username="john", password="pass")  # Authenticate
+user_crud.get_by_username(db, username="john")    # Get by username
+user_crud.get_by_email(db, email="john@example.com")  # Get by email
+user_crud.authenticate(db, username="john", password="pass")  # Authenticate
 ```
 
 ### Bot CRUD (`crud_bot`)
@@ -208,7 +208,7 @@ def create_item(
 
 ```python
 # Convert database model to schema
-user = crud_user.get(db, user_id)
+user = user_crud.get(db, user_id)
 if user:
     return UserPublic.model_validate(user)  # Convert to public schema
 ```
@@ -225,7 +225,7 @@ user = db.exec(statement).first()
 ### After (Using CRUD)
 ```python
 # In service/endpoint
-user = crud_user.get_by_username(db, username=username)
+user = user_crud.get_by_username(db, username=username)
 ```
 
 ## Benefits
@@ -240,15 +240,15 @@ user = crud_user.get_by_username(db, username=username)
 ## Testing CRUD Operations
 
 ```python
-# tests/test_crud_user.py
+# tests/test_user_crud.py
 def test_create_user(db_session):
     user_create = UserCreate(username="test", password="password")
-    user = crud_user.create(db_session, obj_in=user_create)
+    user = user_crud.create(db_session, obj_in=user_create)
     assert user.username == "test"
     assert user.id is not None
 
 def test_get_by_username(db_session):
-    user = crud_user.get_by_username(db_session, username="test")
+    user = user_crud.get_by_username(db_session, username="test")
     assert user is not None
     assert user.username == "test"
 ```

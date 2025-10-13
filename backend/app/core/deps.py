@@ -10,7 +10,7 @@ from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.security import verify_token
-from app.db.crud.user import user as crud_user
+from app.db.crud.user import user as user_crud
 from app.db.database import get_db
 from app.schemas.user import UserInDB
 
@@ -37,7 +37,7 @@ def get_current_user(
         raise credentials_exception
 
     # Get user from database
-    user = crud_user.get_by_username(db, username=username)
+    user = user_crud.get_by_username(db, username=username)
     if user is None:
         raise credentials_exception
 
@@ -91,7 +91,7 @@ def get_current_user_optional(
     if username is None:
         return None
 
-    user = crud_user.get_by_username(db, username=username)
+    user = user_crud.get_by_username(db, username=username)
     if user is None:
         return None
 
