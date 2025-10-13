@@ -1,5 +1,7 @@
 import asyncio
 from fastapi import WebSocket
+from app.services.gbm import GeometricBrownianMotionAssetSimulator
+
 
 class PriceEngine:
     def __init__(self):
@@ -27,7 +29,8 @@ class PriceEngine:
         self.is_running = True
         while self.is_running:
             try:
-                await self.broadcast({})
+                gbmas = GeometricBrownianMotionAssetSimulator(100, 0.05, 0.5, 1/252)
+                await self.broadcast(gbmas())
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 self.is_running = False
@@ -35,5 +38,6 @@ class PriceEngine:
             except Exception as e:
                 # continue
                 await asyncio.sleep(1)
+
 
 price_engine = PriceEngine()
