@@ -16,5 +16,3 @@ class NewsEvent(SQLModel, table=True):
     headline: str = Field(nullable=False)
     magnitude: float = Field(nullable=False)
     decay_halflife_s: float = Field(nullable=False)
-    shock_type: str = Field(nullable=False)
-    scope: str = Field(nullable=False)
