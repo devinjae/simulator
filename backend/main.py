@@ -12,7 +12,7 @@ from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
 from app.models import models
-from app.websocket.price_engine import price_engine
+from app.dependencies import price_engine
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -33,9 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Load dependencies (should be reused, single instance)
-price_engine = PriceEngine()
 
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
