@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-from app.dependencies import get_news_engine
+from dependencies import get_news_engine
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -14,5 +15,5 @@ class NewsRequest(BaseModel):
 
 @router.post("/news")
 async def create_news(news: NewsRequest, news_engine = Depends(get_news_engine)):
-    news_engine.add_news_ad_hoc(news.dict())
+    news_engine.add_news_ad_hoc(dict(news))
     return {"message": "News created successfully"}
