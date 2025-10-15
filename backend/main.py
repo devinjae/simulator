@@ -34,6 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load dependencies (should be reused, single instance)
+price_engine = PriceEngine()
+
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
 

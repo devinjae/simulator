@@ -47,4 +47,3 @@ class PriceEngine:
                 # continue
                 await asyncio.sleep(1)
 
-price_engine = PriceEngine()
