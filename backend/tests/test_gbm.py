@@ -16,12 +16,12 @@ class TestGeometricBrownianMotionAssetSimulator(TestCase):
         # how large the sample pool is
         self.n_samples = 100000
 
-        self.gbmas = GeometricBrownianMotionAssetSimulator(self.S0, self.mu, self.sigma)
+        self.gbmas = GeometricBrownianMotionAssetSimulator(self.S0, self.mu, self.sigma, self.dt)
 
     def test_gbm_mean_var(self):
         prices = [self.S0]
         for _ in range(self.n_samples):
-            prices.append(self.gbmas(self.dt))
+            prices.append(self.gbmas())
 
         expected_mean = (self.mu - (0.5 * self.sigma**2)) * self.dt
         expected_var = self.sigma**2 * self.dt
