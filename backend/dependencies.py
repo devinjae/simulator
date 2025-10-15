@@ -2,11 +2,11 @@ from app.websocket.price_engine import PriceEngine
 from app.services.news import NewsShockSimulator
 
 """
-Dependency injections
+For dependency injections, these are all singletons
 """
 
-price_engine = PriceEngine()
 news_engine = NewsShockSimulator()
+price_engine = PriceEngine(news_engine=news_engine)
 
 def get_price_engine() -> PriceEngine:
     return price_engine

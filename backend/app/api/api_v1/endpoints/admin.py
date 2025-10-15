@@ -3,7 +3,16 @@ from app.dependencies import get_news_engine
 
 router = APIRouter()
 
+class NewsRequest(BaseModel):
+    id: int
+    ts_release_ms: int
+    decay_halflife_s: int
+    magnitude: float
+    headline: str
+    shock_type: str
+    scope: str
+
 @router.post("/news")
-async def create_news(news_engine = Depends(get_news_engine)):
-    
+async def create_news(news: NewsRequest, news_engine = Depends(get_news_engine)):
+    news_engine.add_news_ad_hoc(news.dict())
     return {"message": "News created successfully"}

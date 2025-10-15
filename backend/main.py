@@ -12,7 +12,7 @@ from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
 from app.models import models
-from app.dependencies import price_engine
+from app.dependencies import price_engine, news_engine
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -55,7 +55,15 @@ async def version_check():
 
 @app.on_event("startup")
 async def startup_event():
+    """
+    Start price engine for GBM
+    """
     asyncio.create_task(price_engine.run())
+    
+    """
+    Start news engine to adjust add. drift
+    """
+    asyncio.create_task(news_engine.add_news_on_tick())
 
 
 @app.websocket("/ws/market")
