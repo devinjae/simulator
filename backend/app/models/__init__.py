@@ -11,6 +11,7 @@ from .macro_factor import MacroFactor
 from .news_event import NewsEvent
 from .news_event_factor import NewsEventFactor
 from .sector import Sector
+from .user import User
 
 __all__ = [
     "Bot",
@@ -22,4 +23,5 @@ __all__ = [
     "NewsEvent",
     "NewsEventFactor",
     "Sector",
+    "User",
 ]
