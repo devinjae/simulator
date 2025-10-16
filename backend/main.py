@@ -26,9 +26,10 @@ from app.models import (
     Sector,
     User,
 )
-from app.websocket.price_engine import price_engine
+from app.websocket.price_engine import PriceEngine
+price_engine = None
 
-SQLModel.metadata.create_all(bind=engine)
+# SQLModel.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Trading Simulator API",
@@ -68,6 +69,8 @@ async def version_check():
 
 @app.on_event("startup")
 async def startup_event():
+    global price_engine
+    price_engine = PriceEngine()
     asyncio.create_task(price_engine.run())
 
 
