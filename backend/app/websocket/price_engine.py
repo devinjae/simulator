@@ -45,9 +45,7 @@ class PriceEngine:
         self.is_running = True
         while self.is_running:
             try:
-                await self.broadcast({
-                    "additional_drift": self.get_additional_drift()
-                })
+                await self.broadcast({})
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 self.is_running = False
