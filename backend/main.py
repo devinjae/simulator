@@ -29,7 +29,7 @@ from app.models import (
 from app.websocket.price_engine import PriceEngine
 price_engine = None
 
-# SQLModel.metadata.create_all(bind=engine)
+SQLModel.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Trading Simulator API",
