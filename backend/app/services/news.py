@@ -16,7 +16,11 @@ class NewsShockSimulator:
             
             now_s = time.time()
             t0_s = news.get("ts_release_ms", 0) / 1000
-            halflife_s = news.get("decay_halflife_s", 1)  # Avoid division by zero
+            
+            if now_s > t0_s: # News has not been released, impossible
+                return 0
+            
+            halflife_s = news.get("decay_halflife_s", 1)
             magnitude = news.get("magnitude", 0)
             time_delta_s = now_s - t0_s
             
@@ -24,7 +28,6 @@ class NewsShockSimulator:
                 halflife_s = 1
             
             decay = 2 ** (-(time_delta_s) / halflife_s)
-            print(decay)
             eff = magnitude * decay
             return eff
         except Exception as e:

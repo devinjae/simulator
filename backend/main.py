@@ -12,7 +12,7 @@ from app.api.api_v1.api import api_router
 from app.core.config import settings
 from app.db.database import engine
 from app.models import models
-from app.dependencies import price_engine, news_engine
+from dependencies import price_engine, news_engine
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
