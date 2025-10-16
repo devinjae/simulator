@@ -18,12 +18,23 @@ class PriceEngine:
         self.active_connections.discard(websocket)
 
     async def broadcast(self, message):
-        for connection in self.active_connections:
-            try:
-                await connection.send_json(message)
-            except Exception as e:
-                print(f"Error broadcasting to connection: {e}")
-                self.disconnect(connection)
+        # None connected
+        if not self.active_connections:
+            return
+        
+        coros = []
+        for connection in list(self.active_connections):
+            coros.append(self._safe_send(connection, message))
+        
+        # Run all concurrently instead of sequentially
+        await asyncio.gather(*coros, return_exceptions=True)
+
+    async def _safe_send(self, connection: WebSocket, message):
+        try:
+            await connection.send_json(message)
+        except Exception as e:
+            print(f"Error broadcasting to connection: {e}")
+            self.disconnect(connection)
 
     async def run(self):
         self.is_running = True
