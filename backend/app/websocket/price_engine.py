@@ -36,6 +36,13 @@ class PriceEngine:
             }
         ]
 
+        self.gbmas_instances = {
+            ticker["ticker"]:
+            GeometricBrownianMotionAssetSimulator(
+                ticker["current_price"], ticker["mu"], ticker["sigma"], 1/252)
+            for ticker in self.tickers
+        }
+
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.add(websocket)
@@ -66,12 +73,6 @@ class PriceEngine:
         self.is_running = True
         while self.is_running:
             try:
-                self.gbmas_instances = {
-                    ticker["ticker"]:
-                        GeometricBrownianMotionAssetSimulator(
-                            ticker["current_price"], ticker["mu"], ticker["sigma"], 1/252)
-                        for ticker in self.tickers
-                }
                 await self.broadcast({
                     ticker: gbmas() for ticker, gbmas in self.gbmas_instances.items()
                 })
