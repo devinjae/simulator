@@ -26,8 +26,7 @@ from app.models import (
     Sector,
     User,
 )
-from app.websocket.price_engine import PriceEngine
-price_engine = None
+from dependencies import news_engine, price_engine
 
 SQLModel.metadata.create_all(bind=engine)
 
@@ -69,9 +68,15 @@ async def version_check():
 
 @app.on_event("startup")
 async def startup_event():
-    global price_engine
-    price_engine = PriceEngine()
+    """
+    Start price engine for GBM
+    """
     asyncio.create_task(price_engine.run())
+
+    """
+    Start news engine to adjust add. drift
+    """
+    asyncio.create_task(news_engine.add_news_on_tick())
 
 
 @app.websocket("/ws/market")

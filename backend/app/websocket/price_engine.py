@@ -4,7 +4,7 @@ from app.services.gbm import GeometricBrownianMotionAssetSimulator
 
 
 class PriceEngine:
-    def __init__(self):
+    def __init__(self, news_engine=None):
         # TODO: convert to map, should be ticker -> connections
         # also add another map ticker -> gbm simulator
         self.active_connections = set()
@@ -42,6 +42,7 @@ class PriceEngine:
                 ticker["current_price"], ticker["mu"], ticker["sigma"], 1/252)
             for ticker in self.tickers
         }
+        self.news_engine = news_engine
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -49,6 +50,12 @@ class PriceEngine:
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.discard(websocket)
+        
+    def get_additional_drift(self):
+        # Inject into calculate
+        if not self.news_engine:
+            return 0
+        return self.news_engine.get_total_eff()
 
     async def broadcast(self, message):
         # None connected

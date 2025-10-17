@@ -1,42 +1,78 @@
-#root {
-  max-width: 1280px;
+/* Simple responsive utilities for layout */
+.container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0 16px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.nav-inline {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.main {
+  padding: 16px 0;
+}
+
+/* Trades page */
+.trades {
+  display: flex;
+  gap: 16px;
+}
+.trades-aside {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid #eee;
+  padding: 12px;
+}
+.trades-main {
+  flex: 1;
+  padding: 12px;
+}
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.placeholder {
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 140px;
+  background: #fafafa;
+}
+
+/* Login/Register */
+.auth-shell {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 64px);
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  background: #fff;
+}
+.input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+@media (max-width: 900px) {
+  .trades {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+  .trades-aside {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
