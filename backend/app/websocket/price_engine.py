@@ -12,34 +12,34 @@ class PriceEngine:
         self.tickers = [
             {
                 "ticker": "AAPL",
-                "current_price": 180.0,
-                "mu": 0.07,
-                "sigma": 0.25
+                "s_0": 180.0,
+                "mean": 0.07,
+                "variance": 0.25
             },
             {
                 "ticker": "TSLA",
-                "current_price": 250.0,
-                "mu": 0.10,
-                "sigma": 0.40
+                "s_0": 250.0,
+                "mean": 0.10,
+                "variance": 0.40
             },
             {
                 "ticker": "GOOG",
-                "current_price": 340.0,
-                "mu": 0.06,
-                "sigma": 0.22
+                "s_0": 340.0,
+                "mean": 0.06,
+                "variance": 0.22
             },
             {
                 "ticker": "AMZN",
-                "current_price": 100.0,
-                "mu": 0.08,
-                "sigma": 0.30
+                "s_0": 100.0,
+                "mean": 0.08,
+                "variance": 0.30
             }
         ]
 
         self.gbmas_instances = {
             ticker["ticker"]:
             GeometricBrownianMotionAssetSimulator(
-                ticker["current_price"], ticker["mu"], ticker["sigma"], 1/252)
+                ticker["s_0"], ticker["mean"], ticker["variance"], 1/252)
             for ticker in self.tickers
         }
         self.news_engine = news_engine
@@ -50,7 +50,7 @@ class PriceEngine:
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.discard(websocket)
-        
+
     def get_additional_drift(self):
         # Inject into calculate
         if not self.news_engine:

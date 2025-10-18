@@ -3,11 +3,12 @@ import math
 
 
 class GeometricBrownianMotionAssetSimulator:
-    def __init__(self, current_price, mu, sigma, delta):
+    def __init__(self, current_price, mean, variance, delta):
         # queried from UBC TG DB
         self.current_price = current_price
-        self.mu = mu
-        self.sigma = sigma
+        self.mean = mean
+        self.variance = variance
+        self.sigma = math.sqrt(variance)
         self.delta = delta
         self.time = 0.0
 
@@ -22,7 +23,7 @@ class GeometricBrownianMotionAssetSimulator:
         # TODO: calculate drift
         drift = 0
 
-        next_price = self.current_price * np.exp((self.mu + drift - self.sigma**2 / 2) * self.delta +
+        next_price = self.current_price * np.exp((self.mean + drift - self.variance / 2) * self.delta +
                                                  self.sigma * e * math.sqrt(self.delta))
         
         self.current_price = next_price
