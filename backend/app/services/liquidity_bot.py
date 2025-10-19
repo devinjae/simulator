@@ -8,10 +8,14 @@ class LiquidityBot:
         self.mid_price = mid_price 
         self.inventory = inventory 
 
-        self.base_spread = 0.1 
-        self.stress_coefficient = random.uniform(0.05, 0.15) # based on dc discussion
-        self.inventory_coefficient = random.uniform(0.005, 0.05) # based on dc discussion
-        self.quote_noise_sigma = 0.05 
+        self.base_spread = 0.1 # per suggestion
+        self.stress_coefficient = random.uniform(0.05, 0.15) # simulates investors in the market
+        self.inventory_coefficient = random.uniform(0.005, 0.05) # how risk-averse the bot is
+        self.quote_noise_sigma = random.uniform(0, 0.05) # per DC discussion
+    
+    # TODO: adjust with bid and ask externally
+    def adjust_mid_price(self, mid_price):
+        self.mid_price = mid_price
 
     def compute_spread(self, drift_term):
         """
@@ -70,7 +74,7 @@ class LiquidityBot:
 
 # For testing only
 if __name__ == "__main__":
-    bot = LiquidityBot(instrument_id="AAPL", mid_price=180.0, inventory=random.randint(-5, 5))
+    bot = LiquidityBot(instrument_id="META", mid_price=180.0, inventory=random.randint(-5, 5))
     drift_term = random.uniform(-1, 1)
     snapshot = bot.generate_order_book(drift_term)
     print(json.dumps(snapshot, indent=2))
