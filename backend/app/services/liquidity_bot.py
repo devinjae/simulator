@@ -2,6 +2,7 @@ import random
 import json
 
 class LiquidityBot:
+    # TODO: fit in highest bid + lowest ask / 2 to mid price
     def __init__(self, instrument_id, mid_price, inventory):
         self.instrument_id = instrument_id
         self.mid_price = mid_price 
@@ -43,6 +44,8 @@ class LiquidityBot:
 
     def generate_order_book(self, drift_term, levels=3):
         spread = self.compute_spread(drift_term)
+        
+        # Initial bid and ask at level 0
         bid, ask = self.compute_quotes(spread)
 
         bids = []
