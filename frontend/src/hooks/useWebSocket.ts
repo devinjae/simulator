@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 
+// interface for the actual hook
 interface UseWebSocketOptions {
   url: string
   onMessage?: (data: any) => void
   onError?: (error: Event) => void
-  pingInterval?: number // ms between pings
+  pingInterval?: number
   maxRetries?: number
-  initialBackoff?: number // ms
-  maxBackoff?: number // ms
+  initialBackoff?: number
+  maxBackoff?: number
 }
 
+// interface for the state of the hook
 interface WebSocketState {
   isConnected: boolean
   latencyMs: number | null
@@ -55,12 +57,12 @@ export function useWebSocket({
   }, [])
 
   const calculateBackoff = useCallback((retryCount: number) => {
-    // Exponential backoff with jitter
     const exponentialBackoff = Math.min(initialBackoff * Math.pow(2, retryCount), maxBackoff)
-    const jitter = Math.random() * 0.3 * exponentialBackoff // ±30% jitter
+    const jitter = Math.random() * 0.3 * exponentialBackoff 
     return exponentialBackoff + jitter
   }, [initialBackoff, maxBackoff])
 
+  // ping pong every interval
   const startPingPong = useCallback(() => {
     if (pingTimerRef.current) {
       clearInterval(pingTimerRef.current)
@@ -98,8 +100,9 @@ export function useWebSocket({
         try {
           const data = JSON.parse(event.data)
           
-          // Handle pong response
           if (data.type === 'pong' && pingTimestampRef.current) {
+
+            // calculate diff after last time you pinged
             const rtt = Date.now() - pingTimestampRef.current
             setState(prev => ({
               ...prev,
@@ -108,7 +111,8 @@ export function useWebSocket({
             }))
             pingTimestampRef.current = null
           } else {
-            // Regular message
+
+            // other messages (pricing, etc -> price_engine.py)
             onMessage?.(data)
           }
         } catch (err) {
@@ -176,7 +180,7 @@ export function useWebSocket({
     return () => {
       disconnect()
     }
-  }, [connect, disconnect])
+  }, [url]) // Only reconnect when URL changes (avoid DDOS)
 
   return {
     ...state,

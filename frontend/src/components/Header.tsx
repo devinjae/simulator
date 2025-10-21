@@ -11,10 +11,10 @@ function Header() {
   const { latencyMs, isConnected, isReconnecting } = useWebSocket({
     url: 'ws://localhost:8000/ws/market',
     onMessage: () => {
-      // Handle market data updates if needed
+      // TODO: update price display (FE work)
     },
     pingInterval: 5000, // Ping every 5 seconds
-    maxRetries: 10,
+    maxRetries: 0, // TEMP: Only try to connect once (change later in PROD)
     initialBackoff: 500,
     maxBackoff: 10000,
   })
