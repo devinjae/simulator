@@ -1,10 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
+import { useWebSocket } from '../hooks/useWebSocket'
+import LatencyPill from './LatencyPill'
 
 function Header() {
   const navigate = useNavigate()
 
   const isLoggedIn = useMemo(() => false, [])
+
+  const { latencyMs, isConnected, isReconnecting } = useWebSocket({
+    url: 'ws://localhost:8000/ws/market',
+    onMessage: () => {
+      // Handle market data updates if needed
+    },
+    pingInterval: 5000, // Ping every 5 seconds
+    maxRetries: 10,
+    initialBackoff: 500,
+    maxBackoff: 10000,
+  })
 
   return (
     <header style={{ width: '100%', borderBottom: '1px solid #e5e5e5', position: 'sticky', top: 0, background: '#fff', zIndex: 10 }}>
@@ -13,6 +26,11 @@ function Header() {
           Trading Simulator
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LatencyPill 
+            latencyMs={latencyMs} 
+            isConnected={isConnected} 
+            isReconnecting={isReconnecting} 
+          />
           {isLoggedIn ? (
             <Link to="/profile" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#111' }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#ddd' }} />
