@@ -24,6 +24,7 @@ class OrderBook:
         
     def add_order(self, order):
         price = order["price"]
+        side = order["side"]
         
         if side == "buy":
             prices = [o["price"] for o in self.buys]
