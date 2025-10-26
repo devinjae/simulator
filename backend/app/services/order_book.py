@@ -1,5 +1,15 @@
 import bisect
 import uuid
+from enum import Enum
+
+class OrderSide(Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+class OrderStatus(Enum):
+    OPEN = "open"
+    PARTIALLY_FILLED = "partially_filled"
+    FILLED = "filled"
 
 class OrderBook:
     """
@@ -31,11 +41,11 @@ class OrderBook:
         # add ID for easier matching
         order["id"] = uuid.uuid4()
         
-        if side == "buy":
+        if side == OrderSide.BUY:
             prices = [o["price"] for o in self.buys]
             idx = bisect.bisect_left(prices, price)
             self.buys.insert(idx, order)
-        elif side == "sell":
+        elif side == OrderSide.SELL:
             # Invert sign to maintain descending order
             prices = [-o["price"] for o in self.sells]
             idx = bisect.bisect_left(prices, -price)
@@ -51,7 +61,7 @@ class OrderBook:
         TODO: Probably can (partially) optimize by using bin search to get range first
         """
         side = order["side"]
-        orders = self.buys if side == "buy" else self.sells
+        orders = self.buys if side == OrderSide.BUY else self.sells
         
         for i, o in enumerate(orders):
             if o == order:
@@ -91,18 +101,18 @@ class OrderBook:
         side = order["side"]
         quantity = order["quantity"]
         initial_quantity = order["quantity"]
-        opposite_side_orders = self.sells if side == "buy" else self.buys
+        opposite_side_orders = self.sells if side == OrderSide.BUY else self.buys
         
         # 2. nothing to scan through anyways
         if not opposite_side_orders:
             self.add_order(order)
-            return False, None
+            return OrderStatus.OPEN, initial_quantity
         
         # 3. no mid price -> no matching possible (???)
         mid = self.mid_price()
         if mid is None:
             self.add_order(order)
-            return False, None
+            return OrderStatus.OPEN, initial_quantity
         
         # 4. look through opposite side orders
         """
@@ -120,8 +130,8 @@ class OrderBook:
             opposite = sorted_opposites[i]
 
             # skip if price not compatible
-            if (side == "buy" and opposite["price"] > order["price"]) or \
-            (side == "sell" and opposite["price"] < order["price"]):
+            if (side == OrderSide.BUY and opposite["price"] > order["price"]) or \
+            (side == OrderSide.SELL and opposite["price"] < order["price"]):
                 i += 1
                 continue
 
@@ -133,8 +143,8 @@ class OrderBook:
             order_deltas[opposite["id"]] = traded_qty
 
             matched_trades.append({
-                "buy": order if side == "buy" else opposite,
-                "sell": opposite if side == "buy" else order,
+                "buy": order if side == OrderSide.BUY else opposite,
+                "sell": opposite if side == OrderSide.BUY else order,
                 "price": trade_price,
                 "quantity": traded_qty
             })
@@ -155,13 +165,13 @@ class OrderBook:
         # 6. determine matching status
         matching_status = None
         if quantity == initial_quantity: # NOTHING was processed
-            matching_status = "OPEN"
+            matching_status = OrderStatus.OPEN
             self.add_order(order)
         elif quantity > 0: # SOME were processed
             order["quantity"] = quantity
-            matching_status = "PARTIALLY_FILLED"
+            matching_status = OrderStatus.PARTIALLY_FILLED
             self.add_order(order)
         else: # EVERYTHING was processed
-            matching_status = "FILLED"
+            matching_status = OrderStatus.FILLED
             
         return matching_status, quantity
