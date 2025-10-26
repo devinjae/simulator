@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { useWebSocket } from '../hooks/useWebSocket'
 import LatencyPill from './LatencyPill'
+import logoUrl from '../assets/logo.png'
 
 function Header() {
   const navigate = useNavigate()
@@ -20,26 +21,28 @@ function Header() {
   })
 
   return (
-    <header style={{ width: '100%', borderBottom: '1px solid #e5e5e5', position: 'sticky', top: 0, background: '#fff', zIndex: 10 }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#111', fontWeight: 700, fontSize: 18 }}>
-          Trading Simulator
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <LatencyPill 
-            latencyMs={latencyMs} 
-            isConnected={isConnected} 
-            isReconnecting={isReconnecting} 
+    <header className="app-header">
+      <div className="header-inner">
+        <div className="club">
+          <Link to="/" className="club-link">
+            <img src={logoUrl} alt="" className="club-logo" />
+            <span className="club-text">Trading Simulator</span>
+          </Link>
+        </div>
+        <div className="header-actions">
+          <LatencyPill
+            latencyMs={latencyMs}
+            isConnected={isConnected}
+            isReconnecting={isReconnecting}
           />
+          <Link to="/trades" className="nav-link">Trades</Link>
           {isLoggedIn ? (
-            <Link to="/profile" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#111' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#ddd' }} />
-              <span>Profile</span>
-            </Link>
+            <Link to="/profile" className="btn btn-secondary">Profile</Link>
           ) : (
-            <button onClick={() => navigate('/login')} style={{ padding: '8px 12px', border: '1px solid #ccc', background: '#fff', borderRadius: 6, cursor: 'pointer' }}>
-              Log in
-            </button>
+            <div className="auth-actions">
+              <button className="btn btn-outline" onClick={() => navigate('/login?mode=signup')}>Sign Up</button>
+              <button className="btn btn-primary" onClick={() => navigate('/login?mode=login')}>Log In</button>
+            </div>
           )}
         </div>
       </div>

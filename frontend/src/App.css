@@ -1,3 +1,12 @@
+/* Theme */
+:root {
+  --color-red: #892736;
+  --color-white: #FFFFFF;
+  --color-bg: #F6F6F6;
+  --border-soft: #e5e5e5;
+  --header-height: 76px;
+}
+
 /* Simple responsive utilities for layout */
 .container {
   width: 100%;
@@ -18,31 +27,59 @@
 
 /* Trades page */
 .trades {
-  display: flex;
-  gap: 16px;
+  position: relative;
+  min-height: calc(100vh - var(--header-height));
+  background: var(--color-bg);
 }
-.trades-aside {
-  width: 240px;
-  flex-shrink: 0;
-  border-right: 1px solid #eee;
-  padding: 12px;
+
+/* Hover overlay sidebar */
+.overlay-aside {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 16px;
+  height: auto;
+  max-height: 70vh;
+  width: 12px; /* collapsed */
+  background: var(--color-white);
+  border-right: 1px solid var(--border-soft);
+  padding: 8px 6px;
+  transition: width 180ms ease, padding 180ms ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  z-index: 9;
+  overflow: hidden;
+  border-radius: 12px;
 }
-.trades-main {
-  flex: 1;
-  padding: 12px;
+.overlay-aside:hover {
+  width: 140px;
+  padding: 14px 14px;
 }
-.widget-grid {
+.overlay-title {
+  margin: 0 0 8px 0;
+  color: var(--color-red);
+}
+.widgets-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 12px;
+  color: var(--color-red);
+  font-weight: 600;
 }
-.placeholder {
-  border: 1px dashed #bbb;
-  border-radius: 8px;
-  padding: 12px;
-  min-height: 140px;
-  background: #fafafa;
+
+/* Stage area for widgets */
+.trades-stage {
+  margin-left: 16px;
+  background: var(--color-bg);
+  min-height: calc(100vh - var(--header-height));
+  border-radius: 10px;
+  margin-right: 16px;
 }
+
+/* Hide text when collapsed */
+.overlay-aside:not(:hover) .overlay-title,
+.overlay-aside:not(:hover) .widgets-list { opacity: 0; pointer-events: none; }
 
 /* Login/Register */
 .auth-shell {
@@ -53,26 +90,95 @@
 .auth-card {
   width: 100%;
   max-width: 420px;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  padding: 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  background: #fff;
+  background: var(--color-white);
 }
+.input-label { display: block; margin-bottom: 6px; font-weight: 700; }
 .input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 12px 14px;
+  border: none;
+  background: var(--color-bg);
+  border-radius: 14px;
+  box-sizing: border-box;
 }
+.btn-block { width: 100%; }
+
+/* Header styles */
+.app-header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-white);
+  border-bottom: 0.5px solid var(--border-soft);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.club-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.club-logo { height: 64px; width: auto; object-fit: contain; }
+.club-text {
+  color: var(--color-red);
+  font-weight: 800;
+  font-size: 20px;
+}
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-link {
+  color: #000000;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 8px;
+}
+.nav-link:hover { color: var(--color-red); }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.auth-actions { display: flex; gap: 10px; }
+.btn {
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-weight: 700;
+}
+.btn-primary { background: var(--color-red); color: var(--color-white); border: 1px solid var(--color-red); }
+.btn-outline { background: var(--color-white); color: var(--color-red); border: 2px solid var(--color-red); }
+.btn-outline:hover, .btn-outline:focus { background: var(--color-red); color: var(--color-white); }
+.btn-secondary { background: var(--color-white); color: #111; border: 1px solid var(--border-soft); }
 
 @media (max-width: 900px) {
   .trades {
-    flex-direction: column;
+    min-height: auto;
   }
-  .trades-aside {
+  .overlay-aside,
+  .overlay-aside:hover {
+    position: static;
     width: 100%;
+    height: auto;
     border-right: none;
-    border-bottom: 1px solid #eee;
+    top: 20vh;
+  }
+  .trades-stage,
+  .overlay-aside:hover ~ .trades-stage {
+    margin-left: 0;
+    min-height: 40vh;
   }
 }
