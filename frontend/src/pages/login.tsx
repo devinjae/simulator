@@ -1,20 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export function Login({ onSwitchTab }: { onSwitchTab: (tab: 'login' | 'register') => void }) {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Username or Email</label>
-        <input className="input" type="text" placeholder="username or email" />
+        <label className="input-label">Username/Email</label>
+        <input className="input" type="text" placeholder="Username or Email" />
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Password</label>
-        <input className="input" type="password" placeholder="password" />
+        <label className="input-label">Password</label>
+        <input className="input" type="password" placeholder="Password" />
       </div>
-      <button style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>Log in</button>
+      <button className="btn btn-primary btn-block">Log in</button>
       <div style={{ fontSize: 14 }}>
         Don't have an account yet?{' '}
-        <button onClick={() => onSwitchTab('register')} style={{ background: 'transparent', border: 'none', padding: 0, color: '#646cff', cursor: 'pointer' }}>
+        <button onClick={() => onSwitchTab('register')} style={{ background: 'transparent', border: 'none', padding: 0, color: '#892736', cursor: 'pointer' }}>
           Register now
         </button>
       </div>
@@ -26,29 +27,29 @@ export function Register({ onSwitchTab }: { onSwitchTab: (tab: 'login' | 'regist
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Username</label>
-        <input className="input" type="text" placeholder="username" />
+        <label className="input-label">Username</label>
+        <input className="input" type="text" placeholder="Username" />
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Email</label>
-        <input className="input" type="email" placeholder="email" />
+        <label className="input-label">Email</label>
+        <input className="input" type="email" placeholder="Email" />
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Real Name</label>
-        <input className="input" type="text" placeholder="real name" />
+        <label className="input-label">Full Name</label>
+        <input className="input" type="text" placeholder="Full name" />
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Password</label>
-        <input className="input" type="password" placeholder="password" />
+        <label className="input-label">Password</label>
+        <input className="input" type="password" placeholder="Password" />
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: 4 }}>Confirm Password</label>
-        <input className="input" type="password" placeholder="confirm password" />
+        <label className="input-label">Confirm Password</label>
+        <input className="input" type="password" placeholder="Confirm password" />
       </div>
-      <button style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>Register</button>
+      <button className="btn btn-primary btn-block">Register</button>
       <div style={{ fontSize: 14 }}>
         Already have an account?{' '}
-        <button onClick={() => onSwitchTab('login')} style={{ background: 'transparent', border: 'none', padding: 0, color: '#646cff', cursor: 'pointer' }}>
+        <button onClick={() => onSwitchTab('login')} style={{ background: 'transparent', border: 'none', padding: 0, color: '#892736', cursor: 'pointer' }}>
           Log in here
         </button>
       </div>
@@ -58,11 +59,26 @@ export function Register({ onSwitchTab }: { onSwitchTab: (tab: 'login' | 'regist
 
 function LoginPage() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (mode === 'signup' || mode === 'register') {
+      setTab('register')
+    } else if (mode === 'login') {
+      setTab('login')
+    }
+  }, [searchParams])
+
+  const setTabAndUrl = (next: 'login' | 'register') => {
+    setTab(next)
+    setSearchParams(next === 'register' ? { mode: 'signup' } : { mode: 'login' })
+  }
 
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        {tab === 'login' ? <Login onSwitchTab={setTab} /> : <Register onSwitchTab={setTab} />}
+        {tab === 'login' ? <Login onSwitchTab={setTabAndUrl} /> : <Register onSwitchTab={setTabAndUrl} />}
       </div>
     </div>
   )
