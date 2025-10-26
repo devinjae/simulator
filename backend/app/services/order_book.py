@@ -1,4 +1,5 @@
 import bisect
+import uuid
 
 class OrderBook:
     """
@@ -26,6 +27,9 @@ class OrderBook:
     def add_order(self, order):
         price = order["price"]
         side = order["side"]
+        
+        # add ID for easier matching
+        order["id"] = uuid.uuid4()
         
         if side == "buy":
             prices = [o["price"] for o in self.buys]
@@ -77,41 +81,87 @@ class OrderBook:
         Matches buy with corresponding sell order, or sell with corresponding buy order
         Matching should happen based on proximity to mid price, closest to mid price goes first
         Return status whether matching was successful
+        Partial matching is possible
+        
+        TODO Brian -> revisit algo
+        TODO Brian -> write unit tests (test_order_book.py)
+        This function will be called many times so best to optimize
         """
+        # 1. required variables
         side = order["side"]
+        quantity = order["quantity"]
+        initial_quantity = order["quantity"]
         opposite_side_orders = self.sells if side == "buy" else self.buys
         
+        # 2. nothing to scan through anyways
         if not opposite_side_orders:
-            return False, None
-            
-        mid = self.mid_price()
-        if mid is None:
-            return False, None
-            
-        # Find the best matching order (closest to mid price)
-        best_match = None
-        best_diff = float('inf')
-        best_idx = -1
-        
-        # TODO: use sorted property to optimize
-        for i, opposite_order in enumerate(opposite_side_orders):
-            if (side == "buy" and opposite_order["price"] > order["price"]) or \
-               (side == "sell" and opposite_order["price"] < order["price"]):
-                continue  # Price doesn't match, ignore
-                
-            # Calculate absolute difference from mid price
-            diff = abs(opposite_order["price"] - mid)
-            if diff < best_diff:
-                best_diff = diff
-                best_match = opposite_order
-                best_idx = i
-                
-        if best_match is None:
-            # Can't be matched, add to order book
             self.add_order(order)
             return False, None
+        
+        # 3. no mid price -> no matching possible (???)
+        mid = self.mid_price()
+        if mid is None:
+            self.add_order(order)
+            return False, None
+        
+        # 4. look through opposite side orders
+        """
+        TODO Brian -> revisit algo
+        a. Sort once based on proximity to avoid repeated scans when multiple orders are meant to be matched
+        b. Create a mapping of order ID -> delta (to update order book in one scan)
+        c. After iteration, status can be "FILLED", "PARTIALLY_FILLED", "OPEN"
+        """
+        sorted_opposites = sorted(opposite_orders, key=lambda o: abs(o["price"] - mid))
+        order_deltas = {} # maps order ID -> delta
+        matched_trades = [] # keep track of trades that are matched (do we need this for logs?)
+
+        i = 0
+        while i < len(sorted_opposites) and quantity > 0:
+            opposite = sorted_opposites[i]
+
+            # skip if price not compatible
+            if (side == "buy" and opposite["price"] > order["price"]) or \
+            (side == "sell" and opposite["price"] < order["price"]):
+                i += 1
+                continue
+
+            # determine fill amount
+            traded_qty = min(quantity, opposite["quantity"])
+            trade_price = opposite["price"]  # or mid, or last price depending on your model
             
-        # Remove the matched order from the order book
-        # TODO: this assumes that the quantity matches, implement logic to handle otherwise
-        opposite_side_orders.pop(best_idx)
-        return True, best_match
+            # keep track of deltas for opposite orders
+            order_deltas[opposite["id"]] = traded_qty
+
+            matched_trades.append({
+                "buy": order if side == "buy" else opposite,
+                "sell": opposite if side == "buy" else order,
+                "price": trade_price,
+                "quantity": traded_qty
+            })
+
+            # update quantity remaining
+            quantity -= traded_qty
+            
+            # move to next order
+            i += 1
+        
+        # 5. update actual order book using stored deltas (as mentioned in 4b)
+        for original_opposite in opposite_orders:
+            if original_opposite["id"] in order_deltas:
+                original_opposite["quantity"] -= order_deltas[original_opposite["id"]]
+                if original_opposite["quantity"] == 0:
+                    opposite_orders.remove(original_opposite)
+
+        # 6. determine matching status
+        matching_status = None
+        if quantity == initial_quantity: # NOTHING was processed
+            matching_status = "OPEN"
+            self.add_order(order)
+        elif quantity > 0: # SOME were processed
+            order["quantity"] = quantity
+            matching_status = "PARTIALLY_FILLED"
+            self.add_order(order)
+        else: # EVERYTHING was processed
+            matching_status = "FILLED"
+            
+        return matching_status, quantity

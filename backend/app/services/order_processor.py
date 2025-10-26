@@ -14,21 +14,15 @@ class OrderProcessor:
         
         TODO: handle market, limit, stop order
         """
-        success, matched_order = self.order_book.match_order(order)
+        processing_status, unprocessed_quantity = self.order_book.match_order(order)
         
-        if success:
-            # Price engine update will be implemented later as mentioned in the TODO
-            return {
-                "status": "FILLED",
-                "message": "Order matched successfully",
-                "matched_order": matched_order
-            }
-        else:
-            self.order_book.add_order(order)
-            return {
-                "status": "OPEN",
-                "message": "Order added to the order book"
-            }
+        # Price engine update will be implemented later
+        return {
+            "status": processing_status,
+            "message": "Order processed successfully",
+            "unprocessed_quantity": unprocessed_quantity
+        }
+
     
     def cancel_order(self, order):
         """
