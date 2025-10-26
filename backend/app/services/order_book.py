@@ -41,9 +41,10 @@ class OrderBook:
     
     def remove_order(self, order):
         """
-        TODO
         Remove order from order book
-        Has to be linear since multiple orders can have same price
+        Has to be linear scan since multiple orders can have same price
+        
+        TODO: Probably can (partially) optimize by using bin search to get range first
         """
         side = order["side"]
         orders = self.buys if side == "buy" else self.sells
