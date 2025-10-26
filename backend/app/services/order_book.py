@@ -108,7 +108,7 @@ class OrderBook:
         """
         TODO Brian -> revisit algo
         a. Sort once based on proximity to avoid repeated scans when multiple orders are meant to be matched
-        b. Create a mapping of order ID -> delta (to update order book in one scan)
+        b. Create a mapping of order ID -> delta (so we can update order book in one linear scan)
         c. After iteration, status can be "FILLED", "PARTIALLY_FILLED", "OPEN"
         """
         sorted_opposites = sorted(opposite_orders, key=lambda o: abs(o["price"] - mid))
@@ -145,7 +145,7 @@ class OrderBook:
             # move to next order
             i += 1
         
-        # 5. update actual order book using stored deltas (as mentioned in 4b)
+        # 5. update actual order book using stored deltas in one linear scan (as mentioned in 4b)
         for original_opposite in opposite_orders:
             if original_opposite["id"] in order_deltas:
                 original_opposite["quantity"] -= order_deltas[original_opposite["id"]]
