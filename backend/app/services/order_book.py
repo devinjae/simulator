@@ -39,6 +39,21 @@ class OrderBook:
         else:
             raise ValueError("Invalid side")
     
+    def remove_order(self, order):
+        """
+        TODO
+        Remove order from order book
+        Has to be linear since multiple orders can have same price
+        """
+        side = order["side"]
+        orders = self.buys if side == "buy" else self.sells
+        
+        for i, o in enumerate(orders):
+            if o == order:
+                orders.pop(i)
+                return True
+        return False
+    
     def best_bid(self):
         if not self.buys:
             return None
@@ -59,10 +74,43 @@ class OrderBook:
     def match_order(self, order):
         """
         Matches buy with corresponding sell order, or sell with corresponding buy order
-        
-        TODO
-        Matching should happen based on proximity to mid price
+        Matching should happen based on proximity to mid price, closest to mid price goes first
         Return status whether matching was successful
         """
+        side = order["side"]
+        opposite_side_orders = self.sells if side == "buy" else self.buys
         
+        if not opposite_side_orders:
+            return False, None
             
+        mid = self.mid_price()
+        if mid is None:
+            return False, None
+            
+        # Find the best matching order (closest to mid price)
+        best_match = None
+        best_diff = float('inf')
+        best_idx = -1
+        
+        # TODO: use sorted property to optimize
+        for i, opposite_order in enumerate(opposite_side_orders):
+            if (side == "buy" and opposite_order["price"] > order["price"]) or \
+               (side == "sell" and opposite_order["price"] < order["price"]):
+                continue  # Price doesn't match, ignore
+                
+            # Calculate absolute difference from mid price
+            diff = abs(opposite_order["price"] - mid)
+            if diff < best_diff:
+                best_diff = diff
+                best_match = opposite_order
+                best_idx = i
+                
+        if best_match is None:
+            # Can't be matched, add to order book
+            self.add_order(order)
+            return False, None
+            
+        # Remove the matched order from the order book
+        # TODO: this assumes that the quantity matches, implement logic to handle otherwise
+        opposite_side_orders.pop(best_idx)
+        return True, best_match
