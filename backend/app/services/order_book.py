@@ -155,11 +155,11 @@ class OrderBook:
             i += 1
         
         # 5. update actual order book using stored deltas in one linear scan (as mentioned in 4b)
-        for original_opposite in opposite_orders:
+        for original_opposite in opposite_side_orders:
             if original_opposite["id"] in order_deltas:
                 original_opposite["quantity"] -= order_deltas[original_opposite["id"]]
                 if original_opposite["quantity"] == 0:
-                    opposite_orders.remove(original_opposite)
+                    opposite_side_orders.remove(original_opposite)
 
         # 6. determine matching status
         matching_status = None
