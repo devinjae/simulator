@@ -108,11 +108,10 @@ class OrderBook:
             self.add_order(order)
             return OrderStatus.OPEN, initial_quantity
         
-        # 3. no mid price -> no matching possible (???)
+        # 3. no mid price -> order book is only filled on one side
         mid = self.mid_price()
-        if mid is None:
-            self.add_order(order)
-            return OrderStatus.OPEN, initial_quantity
+        if mid is None: # we know it's the same side because we did check in 2)
+            mid = opposite_side_orders[0]["price"] # use the worst
         
         # 4. look through opposite side orders
         """
