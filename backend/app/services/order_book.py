@@ -120,7 +120,7 @@ class OrderBook:
         b. Create a mapping of order ID -> delta (so we can update order book in one linear scan)
         c. After iteration, status can be "FILLED", "PARTIALLY_FILLED", "OPEN"
         """
-        sorted_opposites = sorted(opposite_orders, key=lambda o: abs(o["price"] - mid))
+        sorted_opposites = sorted(opposite_side_orders, key=lambda o: abs(o["price"] - mid))
         order_deltas = {} # maps order ID -> delta
         matched_trades = [] # keep track of trades that are matched (do we need this for logs?)
 
