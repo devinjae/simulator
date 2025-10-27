@@ -244,13 +244,13 @@ class TestOrderBook(TestCase):
         status, remaining_qty = self.order_book.match_order(buy_order)
 
         # Verify the results
-        self.assertEqual(status, OrderStatus.PARTIALLY_FILLED)
-        self.assertEqual(
-            remaining_qty, 1
-        )  # 7 - (3 + 5) = -1, but should be 0 if we're capping at available
-        self.assertEqual(
-            len(self.order_book.sells), 1
-        )  # One sell order should be fully matched, one partially
-        self.assertEqual(
-            self.order_book.sells[0]["quantity"], 5
-        )  # The second sell order should be partially filled
+        self.assertEqual(status, OrderStatus.FILLED)
+        self.assertEqual(remaining_qty, 0) # all filled
+        
+        # here, we take the worst ask first, so only 101 should be left
+        self.assertEqual(len(self.order_book.sells), 1)
+        self.assertEqual(self.order_book.sells[0]["quantity"], 1)
+        self.assertEqual(self.order_book.sells[0]["price"], 101)
+        
+        # nothing is added to the buys
+        self.assertEqual(len(self.order_book.buys), 0)
