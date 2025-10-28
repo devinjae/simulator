@@ -6,8 +6,9 @@ class UserState:
         self.cash = 0
         self.unfulfilled_trades = []
         self.buys = []
-        self.realized_pnl = 0
         self.total_shares = 0
+        self.prev_avg_price = 0
+        self.realized_pnl = 0
 
     # adds order that is closed and so we call get_avg_price here
     def add_buy(self, ticker, order_price, order_quantity):
@@ -17,9 +18,13 @@ class UserState:
             "order_quantity": order_quantity
         })
         self.realized_pnl = self.get_avg_price(order_price, order_quantity)
+    
+    # TODO: implement remove shares FIFO
+    def remove_buy(self):
+        pass
 
     def add_unfulfilled_trade(self, ticker, order_price, order_quantity):
-        self.add_unfulfilled_trade.append({
+        self.unfulfilled_trades.append({
             "ticker": ticker,
             "order_price": order_price,
             "order_quantity": order_quantity
@@ -28,5 +33,19 @@ class UserState:
     def get_avg_price(self, order_price, order_quantity) -> float:
         prev_quantity = self.total_shares
         self.total_shares += order_quantity
-        avg_price = ((self.realized_pnl * prev_quantity) + order_price) / self.total_shares
+        
+        # should we check for negatives as well here?
+        if self.total_shares == 0:
+            return 0; 
+        
+        avg_price = (
+            (self.prev_avg_price * prev_quantity) + (order_price * order_quantity)
+        ) / self.total_shares
+        
+        self.prev_avg_price = avg_price
+        
         return avg_price
+    
+    # then this would be a separate thing right?
+    def calculate_realized_pnl(self):
+        self.realized_pnl = 0
