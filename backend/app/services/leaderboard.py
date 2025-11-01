@@ -1,10 +1,5 @@
 from typing import List, Dict, Optional
 import redis.asyncio as redis
-from fastapi import Depends
-import json
-
-from app.core.config import settings
-
 
 class Leaderboard:
     def __init__(self, redis_client: redis.Redis):
