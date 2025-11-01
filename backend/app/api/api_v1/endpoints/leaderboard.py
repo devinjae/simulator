@@ -1,8 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import get_current_active_user
-from app.models.user import User
 from app.services.leaderboard import Leaderboard
 from dependencies import get_leaderboard
 
@@ -13,7 +11,6 @@ async def get_leaderboard(
     competition_id: str,
     limit: int = 100,
     leaderboard: Leaderboard = Depends(get_leaderboard),
-    current_user: User = Depends(get_current_active_user),
 ) -> List[dict]:
     return await leaderboard.get_leaderboard(competition_id, limit)
 
@@ -22,7 +19,6 @@ async def get_user_rank(
     competition_id: str,
     user_id: str,
     leaderboard: Leaderboard = Depends(get_leaderboard),
-    current_user: User = Depends(get_current_active_user),
 ) -> dict:
     rank = await leaderboard.get_user_rank(competition_id, user_id)
     if rank is None:
