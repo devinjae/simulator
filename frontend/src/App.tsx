@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import HomePage from './pages/index'
 import TradesPage from './pages/trades'
@@ -10,12 +10,6 @@ function App() {
   return (
     <div>
       <Header />
-      <div className="container">
-        <nav className="nav-inline">
-          <Link to="/">Home</Link>
-          <Link to="/trades">Trades</Link>
-        </nav>
-      </div>
       <main className="main container">
         <Routes>
           <Route path="/" element={<HomePage />} />

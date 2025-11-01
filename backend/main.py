@@ -28,8 +28,6 @@ from app.models import (
 )
 from dependencies import news_engine, price_engine
 
-SQLModel.metadata.create_all(bind=engine)
-
 app = FastAPI(
     title="Trading Simulator API",
     description="A web-based stock trading simulator for live competitions",
@@ -81,10 +79,16 @@ async def startup_event():
 
 @app.websocket("/ws/market")
 async def websocket_market(websocket: WebSocket):
+    import time
+
     await price_engine.connect(websocket)
     try:
         while True:
-            await asyncio.sleep(60)
+            data = await websocket.receive_text()  # ping
+            if data == "ping":
+                await websocket.send_json(
+                    {"type": "pong", "timestamp": time.time()}
+                )  # pong
     except Exception as e:
         pass
     finally:

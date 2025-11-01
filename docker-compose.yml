@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres:16
@@ -6,14 +5,38 @@ services:
       POSTGRES_DB: simdb
       POSTGRES_USER: sim
       POSTGRES_PASSWORD: sim
-    ports: ["5432:5432"]
-    volumes: [dbdata:/var/lib/postgresql/data]
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sim -d simdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     env_file: ./backend/.env
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    ports: ["8000:8000"]
-    depends_on: [db]
+    ports: 
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/.venv  # Exclude .venv from volume mount
+    environment:
+      - DATABASE_URL=postgresql://sim:sim@db:5432/simdb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
   dbdata: {}
