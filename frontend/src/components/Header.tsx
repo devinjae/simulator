@@ -1,24 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
-import { useWebSocket } from '../hooks/useWebSocket'
-import LatencyPill from './LatencyPill'
-import logoUrl from '../assets/logo.png'
+import { Link, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useWebSocketContext } from '../contexts/WebSocketContext';
+import LatencyPill from './LatencyPill';
+import logoUrl from '../assets/logo.png';
 
 function Header() {
-  const navigate = useNavigate()
-
-  const isLoggedIn = useMemo(() => false, [])
-
-  const { latencyMs, isConnected, isReconnecting } = useWebSocket({
-    url: 'ws://localhost:8000/ws/market',
-    onMessage: () => {
-      // TODO: update price display (FE work)
-    },
-    pingInterval: 5000, // Ping every 5 seconds
-    maxRetries: 0, // TEMP: Only try to connect once (change later in PROD)
-    initialBackoff: 500,
-    maxBackoff: 10000,
-  })
+  const navigate = useNavigate();
+  const { latencyMs, isConnected, isReconnecting } = useWebSocketContext();
+  const isLoggedIn = useMemo(() => false, []);
 
   return (
     <header className="app-header">
