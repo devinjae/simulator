@@ -6,7 +6,7 @@ export function Login({ onSwitchTab }: { onSwitchTab: (tab: 'login' | 'register'
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
         <label className="input-label">Username/Email</label>
-        <input className="input" type="text" placeholder="Username or Email lmao" />
+        <input className="input" type="text" placeholder="Username or Email" />
       </div>
       <div>
         <label className="input-label">Password</label>
