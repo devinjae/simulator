@@ -1,28 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useWebSocket } from '../hooks/useWebSocket'
-import { useAuth } from '../contexts/AuthContext'
-import LatencyPill from './LatencyPill'
-import logoUrl from '../assets/logo.png'
+import { Link, useNavigate } from 'react-router-dom';
+import { useWebSocketContext } from '../contexts/WebSocketContext';
+import { useAuth } from '../contexts/AuthContext';
+import LatencyPill from './LatencyPill';
+import logoUrl from '../assets/logo.png';
 
 function Header() {
-  const navigate = useNavigate()
-  const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+  const { latencyMs, isConnected, isReconnecting } = useWebSocketContext();
 
   const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
-
-  const { latencyMs, isConnected, isReconnecting } = useWebSocket({
-    url: 'ws://localhost:8000/ws/market',
-    onMessage: () => {
-      // TODO: update price display (FE work)
-    },
-    pingInterval: 5000, // Ping every 5 seconds
-    maxRetries: 0, // TEMP: Only try to connect once (change later in PROD)
-    initialBackoff: 500,
-    maxBackoff: 10000,
-  })
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="app-header">
@@ -53,9 +43,7 @@ function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
-
-
+export default Header;
