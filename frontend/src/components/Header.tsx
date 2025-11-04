@@ -1,13 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
 import { useWebSocket } from '../hooks/useWebSocket'
+import { useAuth } from '../contexts/AuthContext'
 import LatencyPill from './LatencyPill'
 import logoUrl from '../assets/logo.png'
 
 function Header() {
   const navigate = useNavigate()
+  const { isAuthenticated, logout } = useAuth()
 
-  const isLoggedIn = useMemo(() => false, [])
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   const { latencyMs, isConnected, isReconnecting } = useWebSocket({
     url: 'ws://localhost:8000/ws/market',
@@ -36,11 +40,13 @@ function Header() {
             isReconnecting={isReconnecting}
           />
           <Link to="/trades" className="nav-link">Trades</Link>
-          {isLoggedIn ? (
-            <Link to="/profile" className="btn btn-secondary">Profile</Link>
+          {isAuthenticated ? (
+            <div className="auth-actions">
+              <Link to="/profile" className="btn btn-secondary">Profile</Link>
+              <button className="btn btn-outline" onClick={handleLogout}>Log Out</button>
+            </div>
           ) : (
             <div className="auth-actions">
-              <button className="btn btn-outline" onClick={() => navigate('/login?mode=signup')}>Sign Up</button>
               <button className="btn btn-primary" onClick={() => navigate('/login?mode=login')}>Log In</button>
             </div>
           )}
