@@ -1,4 +1,4 @@
-import PriceTicker from '../components/PriceTicker';
+// import PriceTicker from '../components/PriceTicker';
 
 function HomePage() {
   return (
@@ -25,9 +25,9 @@ function HomePage() {
           </div>
         </div>
         
-        <div>
+        {/* <div>
           <PriceTicker />
-        </div>
+        </div> */}
       </div>
     </div>
   );
