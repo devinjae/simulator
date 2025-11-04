@@ -38,7 +38,7 @@ const PriceTicker: React.FC = () => {
       
       {lastUpdated && (
         <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-          Last updated: {new Date(lastUpdated).toLocaleTimeString()}
+          Last updated: {new Date(lastUpdated).toLocaleTimeString()} lmao
         </div>
       )}
     </div>
