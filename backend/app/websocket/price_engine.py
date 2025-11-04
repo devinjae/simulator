@@ -2,7 +2,7 @@ import asyncio
 
 from fastapi import WebSocket
 
-from app.core.logging import get_logger
+from app.core.deps import get_logger
 from app.services.gbm import GeometricBrownianMotionAssetSimulator
 
 logger = get_logger(__name__)

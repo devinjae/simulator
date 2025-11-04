@@ -5,7 +5,7 @@ Setup a globally logger at: `backend/app/core/logging.py`
 ## Usage
 
 ```python
-from app.core.logging import get_logger
+from app.core.deps import get_logger
 
 logger = get_logger(__name__)
 

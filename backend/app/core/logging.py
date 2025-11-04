@@ -74,16 +74,3 @@ def setup_logging(
     logger.info(f"Logging configured with level: {level}")
     if log_file:
         logger.info(f"Logging to file: {log_file}")
-
-
-def get_logger(name: str) -> logging.Logger:
-    """
-    Get a logger instance for a module.
-
-    Args:
-        name: Logger name (typically __name__)
-
-    Returns:
-        Logger instance
-    """
-    return logging.getLogger(name)
