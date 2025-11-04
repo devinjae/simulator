@@ -36,8 +36,7 @@ app = FastAPI(
     title="Trading Simulator API",
     description="A web-based stock trading simulator for live competitions",
     version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
+    docs_url="/api/docs", redoc_url="/api/redoc",
 )
 
 # CORS middleware
