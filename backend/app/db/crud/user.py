@@ -74,8 +74,12 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def authenticate(
         self, db: Session, *, username: str, password: str
     ) -> Optional[User]:
-        """Authenticate a user with username and password"""
+        """Authenticate a user with username or email and password"""
+        # Try username first
         user = self.get_by_username(db, username=username)
+        # If not found, try email
+        if not user:
+            user = self.get_by_email(db, email=username)
         if not user:
             return None
         if not verify_password(password, user.hashed_password):

@@ -1,18 +1,64 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export function Login({ onSwitchTab }: { onSwitchTab: (tab: 'login' | 'register') => void }) {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    
+    try {
+      await login(username, password)
+      navigate('/') // Redirect to home on success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div>
-        <label className="input-label">Username/Email</label>
-        <input className="input" type="text" placeholder="Username or Email" />
-      </div>
-      <div>
-        <label className="input-label">Password</label>
-        <input className="input" type="password" placeholder="Password" />
-      </div>
-      <button className="btn btn-primary btn-block">Log in</button>
+      {error && (
+        <div style={{ padding: '12px', background: '#fee', color: '#c33', borderRadius: '4px' }}>
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleLogin} style={{ display: 'grid', gap: 12 }}>
+        <div>
+          <label className="input-label">Username/Email</label>
+          <input 
+            className="input" 
+            type="text" 
+            placeholder="Username or Email"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="input-label">Password</label>
+          <input 
+            className="input" 
+            type="password" 
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Log in'}
+        </button>
+      </form>
       <div style={{ fontSize: 14 }}>
         Don't have an account yet?{' '}
         <button onClick={() => onSwitchTab('register')} style={{ background: 'transparent', border: 'none', padding: 0, color: '#892736', cursor: 'pointer' }}>
