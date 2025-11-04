@@ -9,7 +9,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlmodel import Session, select
 
-from app.core.logging import get_logger, setup_logging
+from app.core.deps import get_logger
+from app.core.logging import setup_logging
 from app.core.security import get_password_hash
 from app.db.database import engine
 from app.models.user import User
