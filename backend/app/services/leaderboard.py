@@ -1,10 +1,10 @@
 from typing import Dict, List, Optional
 
-import redis.asyncio as redis
+# import redis.asyncio as redis
 
 
 class Leaderboard:
-    def __init__(self, redis_client: redis.Redis):
+    def __init__(self, redis_client):
         self.redis = redis_client
 
         # Overall leaderboard -> ZSET (sorted set)
