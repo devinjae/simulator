@@ -1,10 +1,12 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.services.leaderboard import Leaderboard
 from dependencies import get_leaderboard
 
 router = APIRouter()
+
 
 @router.get("/competitions/{competition_id}/leaderboard")
 async def get_leaderboard(
@@ -13,6 +15,7 @@ async def get_leaderboard(
     leaderboard: Leaderboard = Depends(get_leaderboard),
 ) -> List[dict]:
     return await leaderboard.get_leaderboard(competition_id, limit)
+
 
 @router.get("/competitions/{competition_id}/rank/{user_id}")
 async def get_user_rank(
