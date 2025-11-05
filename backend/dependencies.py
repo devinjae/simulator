@@ -1,8 +1,9 @@
+import redis.asyncio as redis
+
 from app.services.leaderboard import Leaderboard
 from app.services.news import NewsShockSimulator
 from app.services.order_book import OrderBook
 from app.websocket.price_engine import PriceEngine
-import redis.asyncio as redis
 
 """
 For dependency injections, these are all singletons

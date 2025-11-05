@@ -1,3 +1,5 @@
+import PriceChart from "../components/chart"
+
 function TradesPage() {
   return (
     <div className="trades">
@@ -12,6 +14,8 @@ function TradesPage() {
           <li>Buy/Sell Widget</li>
         </ul>
       </aside>
+      
+      <PriceChart />
       <div className="trades-stage" />
     </div>
   )

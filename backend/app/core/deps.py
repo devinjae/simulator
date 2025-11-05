@@ -2,6 +2,7 @@
 Dependencies for authentication and authorization
 """
 
+import logging
 from typing import Generator, Optional
 
 from fastapi import Depends, HTTPException, status
@@ -96,3 +97,16 @@ def get_current_user_optional(
         return None
 
     return UserInDB.model_validate(user)
+
+
+def get_logger(name: str) -> logging.Logger:
+    """
+    Get a logger instance for a module.
+
+    Args:
+        name: Logger name (typically __name__)
+
+    Returns:
+        Logger instance
+    """
+    return logging.getLogger(name)

@@ -1,24 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
-import { useWebSocket } from '../hooks/useWebSocket'
-import LatencyPill from './LatencyPill'
-import logoUrl from '../assets/logo.png'
+import { Link, useNavigate } from 'react-router-dom';
+import { useWebSocketContext } from '../contexts/WebSocketContext';
+import { useAuth } from '../contexts/AuthContext';
+import LatencyPill from './LatencyPill';
+import logoUrl from '../assets/logo.png';
 
 function Header() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+  const { latencyMs, isConnected, isReconnecting } = useWebSocketContext();
 
-  const isLoggedIn = useMemo(() => false, [])
-
-  const { latencyMs, isConnected, isReconnecting } = useWebSocket({
-    url: 'ws://localhost:8000/ws/market',
-    onMessage: () => {
-      // TODO: update price display (FE work)
-    },
-    pingInterval: 5000, // Ping every 5 seconds
-    maxRetries: 0, // TEMP: Only try to connect once (change later in PROD)
-    initialBackoff: 500,
-    maxBackoff: 10000,
-  })
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="app-header">
@@ -36,20 +30,20 @@ function Header() {
             isReconnecting={isReconnecting}
           />
           <Link to="/trades" className="nav-link">Trades</Link>
-          {isLoggedIn ? (
-            <Link to="/profile" className="btn btn-secondary">Profile</Link>
+          {isAuthenticated ? (
+            <div className="auth-actions">
+              <Link to="/profile" className="btn btn-secondary">Profile</Link>
+              <button className="btn btn-outline" onClick={handleLogout}>Log Out</button>
+            </div>
           ) : (
             <div className="auth-actions">
-              <button className="btn btn-outline" onClick={() => navigate('/login?mode=signup')}>Sign Up</button>
               <button className="btn btn-primary" onClick={() => navigate('/login?mode=login')}>Log In</button>
             </div>
           )}
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
-
-
+export default Header;
